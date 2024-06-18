@@ -1,6 +1,6 @@
 
 function createCircle(){
-    //creating a circle with random radius
+    //random radius
     var radius = Math.floor(Math.random() * 200) + 50; 
 
     var circle = document.createElement('div');
@@ -12,37 +12,52 @@ function createCircle(){
     circle.style.position = 'absolute';
     circle.style.left = (event.clientX - radius / 2) + 'px'; 
     circle.style.top = (event.clientY - radius / 2) + 'px';
-
     return circle;
     
 }
 
+function check(divId) {
+    return new Promise((resolve) => {
+      const interval = setInterval(() => {
+        const div = document.getElementById(divId);
+        if (div) {
+          clearInterval(interval);
+          resolve(div);
+        }
+      }, 200);
+    });
+  }
+
+// Function to show alert if div exists
+async function showAlertIfDivExists(divId) {
+    const div = await check(divId);
+    if (div) {
+      alert("Circles intersecting");
+    }
+}
+
 document.addEventListener('click', function(event) {
-    // console.log(document.querySelectorAll('div').length);
-    
-    //at most 2 circles on screen
+    console.log(document.querySelectorAll('div').length);
     if (document.querySelectorAll('div').length === 2){
         document.body.removeChild(document.querySelector('div'));
     }
     let circle = createCircle();
     document.body.appendChild(circle);
 
+    circle.id = 'target';
+
     let allCircles = document.querySelectorAll('div');
-    //going through each child 
     allCircles.forEach(function(existingCircle) {
         let existRadius = parseInt(existingCircle.style.width)/2;
         let curRadius = parseInt(circle.style.width)/2
-
-        //checking if this is not the same as current circle
         if (existingCircle !== circle){
             let dx = parseInt(existingCircle.style.left) - parseInt(circle.style.left);
             let dy = parseInt(existingCircle.style.top) - parseInt(circle.style.top);
             let dist = Math.sqrt((dx * dx) + (dy * dy));
             let sum = (curRadius + existRadius);
-
-            //condition for intersection
             if (dist < sum){
-                alert("circles intersecting");
+                // alert("circles intersecting");
+                showAlertIfDivExists('target');
             }
         }
     });
